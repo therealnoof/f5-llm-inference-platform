@@ -34,9 +34,21 @@ venv\Scripts\activate
 
 ### 3. Install Dependencies
 
+**On macOS:**
+```bash
+pip3 install -r requirements.txt
+```
+
+**On Linux/Windows (or if inside a virtual environment):**
 ```bash
 pip install -r requirements.txt
 ```
+
+**Note for macOS users:** If you get a warning about scripts not being on PATH, add this to your `~/.zshrc` or `~/.bash_profile`:
+```bash
+export PATH="$HOME/Library/Python/3.9/bin:$PATH"
+```
+Then run `source ~/.zshrc` (or `source ~/.bash_profile`) to apply the changes.
 
 ### 4. Set Up Environment Variables (Optional)
 
@@ -56,6 +68,16 @@ OPENAI_API_KEY=your_openai_api_key_here
 
 ### 5. Run the Application
 
+**If using a virtual environment (recommended):**
+```bash
+streamlit run app.py
+```
+
+**On macOS without virtual environment:**
+```bash
+python3 -m streamlit run app.py
+```
+Or, if you added the Python bin directory to your PATH:
 ```bash
 streamlit run app.py
 ```
@@ -243,6 +265,19 @@ gatherUsageStats = false
 
 ## Troubleshooting
 
+### "pip: command not found" on macOS
+Use `pip3` instead of `pip`:
+```bash
+pip3 install -r requirements.txt
+```
+
+### "streamlit: command not found" on macOS
+Use the Python module syntax:
+```bash
+python3 -m streamlit run app.py
+```
+Or add Python's bin directory to your PATH (see installation instructions above).
+
 ### Port Already in Use
 ```bash
 # Find and kill the process using port 8501
@@ -252,6 +287,9 @@ lsof -ti:8501 | xargs kill -9
 ### Module Not Found Error
 ```bash
 # Ensure you're in the virtual environment and reinstall
+# On macOS:
+pip3 install -r requirements.txt
+# On Linux/Windows or in venv:
 pip install -r requirements.txt
 ```
 

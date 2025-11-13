@@ -18,16 +18,32 @@ A modern, clean Streamlit application for interacting with multiple Large Langua
 ### Installation
 
 1. Install Python dependencies:
+
+**On macOS:**
+```bash
+pip3 install -r requirements.txt
+```
+
+**On Linux/Windows:**
 ```bash
 pip install -r requirements.txt
 ```
 
 2. Run the application:
+
+**On macOS:**
+```bash
+python3 -m streamlit run app.py
+```
+
+**On Linux/Windows (or if using virtual environment):**
 ```bash
 streamlit run app.py
 ```
 
 3. Open your browser to `http://localhost:8501`
+
+**Note:** For detailed setup instructions including PATH configuration, see [DEPLOYMENT.md](DEPLOYMENT.md)
 
 ### Configuration
 
