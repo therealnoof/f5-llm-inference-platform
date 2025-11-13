@@ -1,0 +1,9 @@
+# Streamlit Framework
+streamlit>=1.31.0
+
+# LLM Provider SDKs
+anthropic>=0.40.0
+openai>=1.54.0
+
+# Additional Dependencies
+python-dotenv>=1.0.0

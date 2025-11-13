@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(gh auth login:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
