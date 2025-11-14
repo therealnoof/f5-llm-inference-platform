@@ -7,3 +7,4 @@ openai>=1.54.0
 
 # Additional Dependencies
 python-dotenv>=1.0.0
+requests>=2.31.0

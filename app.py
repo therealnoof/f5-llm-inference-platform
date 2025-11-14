@@ -1,64 +1,53 @@
 import streamlit as st
 import anthropic
 import openai
-from typing import Generator
+import requests
 
 # Page configuration
 st.set_page_config(
-    page_title="F5 LLM Inference",
-    page_icon="🤖",
-    layout="wide",
+    page_title="AI Assistant",
+    page_icon="💬",
+    layout="centered",
     initial_sidebar_state="expanded"
 )
 
-# Custom CSS for modern, clean design
+# Custom CSS for clean, modern design
 st.markdown("""
 <style>
     .main {
-        background-color: #f8f9fa;
+        background-color: #ffffff;
     }
-    .stTextInput > div > div > input {
-        border-radius: 10px;
+    .stApp {
+        max-width: 1200px;
+    }
+    div[data-testid="stSidebarNav"] {
+        padding-top: 0;
+    }
+    .css-1d391kg {
+        padding-top: 3rem;
+    }
+    h1 {
+        color: #1f1f1f;
+        font-weight: 600;
+        padding-bottom: 0.5rem;
+    }
+    .stChatMessage {
+        padding: 1rem;
+        border-radius: 0.5rem;
+        margin-bottom: 1rem;
     }
     .stButton > button {
-        border-radius: 10px;
-        background-color: #e40046;
+        border-radius: 0.5rem;
+        width: 100%;
+        background-color: #ff4b4b;
         color: white;
-        font-weight: 600;
+        font-weight: 500;
         border: none;
-        padding: 0.5rem 2rem;
         transition: all 0.3s;
     }
     .stButton > button:hover {
-        background-color: #c4003d;
-        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-    }
-    .chat-message {
-        padding: 1.5rem;
-        border-radius: 10px;
-        margin-bottom: 1rem;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    }
-    .user-message {
-        background-color: #e8f4f8;
-        border-left: 4px solid #1f77b4;
-    }
-    .assistant-message {
-        background-color: #f0f0f0;
-        border-left: 4px solid #e40046;
-    }
-    .f5-logo {
-        text-align: center;
-        font-size: 4rem;
-        font-weight: 900;
-        color: #e40046;
-        margin: 2rem 0;
-        font-family: 'Arial', sans-serif;
-    }
-    .subtitle {
-        text-align: center;
-        color: #666;
-        margin-bottom: 2rem;
+        background-color: #ff3333;
+        box-shadow: 0 2px 8px rgba(255, 75, 75, 0.3);
     }
 </style>
 """, unsafe_allow_html=True)
@@ -70,30 +59,71 @@ if "api_key" not in st.session_state:
     st.session_state.api_key = ""
 if "provider" not in st.session_state:
     st.session_state.provider = "Anthropic"
+if "local_host" not in st.session_state:
+    st.session_state.local_host = "127.0.0.1"
+if "local_port" not in st.session_state:
+    st.session_state.local_port = 1337
 
-# F5 Logo
-st.markdown('<div class="f5-logo">F5</div>', unsafe_allow_html=True)
-st.markdown('<p class="subtitle">LLM Inference Platform</p>', unsafe_allow_html=True)
+# Header
+st.title("💬 AI Assistant")
+st.caption("Chat with Claude, GPT, or Local models")
 
 # Sidebar configuration
 with st.sidebar:
     st.header("⚙️ Configuration")
 
+    st.divider()
+
     # Provider selection
     provider = st.selectbox(
         "LLM Provider",
-        ["Anthropic", "OpenAI"],
+        ["Anthropic", "OpenAI", "Local"],
         key="provider_select"
     )
     st.session_state.provider = provider
 
+    # Local server configuration
+    if provider == "Local":
+        st.info("💡 Connect to a local API server (e.g., LM Studio, Ollama, vLLM)")
+
+        col1, col2 = st.columns([2, 1])
+        with col1:
+            local_host = st.text_input(
+                "Host",
+                value=st.session_state.local_host,
+                help="Local server host address"
+            )
+            st.session_state.local_host = local_host
+
+        with col2:
+            local_port = st.number_input(
+                "Port",
+                min_value=1,
+                max_value=65535,
+                value=st.session_state.local_port,
+                help="Local server port"
+            )
+            st.session_state.local_port = local_port
+
+        # Show the full URL
+        local_url = f"http://{local_host}:{local_port}"
+        st.caption(f"🌐 Server URL: `{local_url}`")
+
     # API Key input
-    api_key = st.text_input(
-        "API Key",
-        type="password",
-        value=st.session_state.api_key,
-        help=f"Enter your {provider} API key"
-    )
+    if provider == "Local":
+        api_key = st.text_input(
+            "API Key (Optional)",
+            type="password",
+            value=st.session_state.api_key,
+            help="Some local servers require an API key"
+        )
+    else:
+        api_key = st.text_input(
+            "API Key",
+            type="password",
+            value=st.session_state.api_key,
+            help=f"Enter your {provider} API key"
+        )
     st.session_state.api_key = api_key
 
     # Model selection based on provider
@@ -107,7 +137,7 @@ with st.sidebar:
                 "claude-3-opus-20240229"
             ]
         )
-    else:  # OpenAI
+    elif provider == "OpenAI":
         model = st.selectbox(
             "Model",
             [
@@ -117,58 +147,63 @@ with st.sidebar:
                 "gpt-3.5-turbo"
             ]
         )
+    else:  # Local
+        model = st.text_input(
+            "Model Name",
+            value="local-model",
+            help="Enter the model name from your local server"
+        )
 
-    # Temperature slider
-    temperature = st.slider(
-        "Temperature",
-        min_value=0.0,
-        max_value=1.0,
-        value=0.7,
-        step=0.1,
-        help="Controls randomness in responses"
-    )
+    st.divider()
 
-    # Max tokens
-    max_tokens = st.slider(
-        "Max Tokens",
-        min_value=256,
-        max_value=4096,
-        value=1024,
-        step=256,
-        help="Maximum length of the response"
-    )
+    # Advanced settings
+    with st.expander("⚡ Advanced Settings"):
+        # Temperature slider
+        temperature = st.slider(
+            "Temperature",
+            min_value=0.0,
+            max_value=1.0,
+            value=0.7,
+            step=0.1,
+            help="Controls randomness in responses"
+        )
+
+        # Max tokens
+        max_tokens = st.slider(
+            "Max Tokens",
+            min_value=256,
+            max_value=4096,
+            value=1024,
+            step=256,
+            help="Maximum length of the response"
+        )
+
+    st.divider()
 
     # Clear chat button
-    if st.button("🗑️ Clear Chat"):
+    if st.button("🗑️ Clear Chat History"):
         st.session_state.messages = []
         st.rerun()
 
     st.divider()
+
+    # About section
     st.markdown("### About")
     st.markdown("""
-    This app provides a unified interface for interacting with various LLM providers.
+    A simple interface for interacting with LLM providers.
 
-    **Supported Providers:**
-    - Anthropic (Claude)
-    - OpenAI (GPT)
+    **Supported:**
+    - 🤖 Anthropic Claude
+    - 🔮 OpenAI GPT
+    - 🖥️ Local API Servers
     """)
 
-# Main chat interface
-st.markdown("---")
-
-# Display chat history
+# Display chat messages
 for message in st.session_state.messages:
-    role = message["role"]
-    content = message["content"]
+    with st.chat_message(message["role"]):
+        st.markdown(message["content"])
 
-    if role == "user":
-        st.markdown(f'<div class="chat-message user-message"><strong>You:</strong><br>{content}</div>',
-                   unsafe_allow_html=True)
-    else:
-        st.markdown(f'<div class="chat-message assistant-message"><strong>Assistant:</strong><br>{content}</div>',
-                   unsafe_allow_html=True)
-
-# Chat input
+# Chat input functions
 def get_anthropic_response(messages: list, model: str, temperature: float, max_tokens: int) -> str:
     """Get response from Anthropic API"""
     try:
@@ -191,7 +226,7 @@ def get_anthropic_response(messages: list, model: str, temperature: float, max_t
 
         return response.content[0].text
     except Exception as e:
-        return f"Error: {str(e)}"
+        return f"❌ Error: {str(e)}"
 
 def get_openai_response(messages: list, model: str, temperature: float, max_tokens: int) -> str:
     """Get response from OpenAI API"""
@@ -215,19 +250,80 @@ def get_openai_response(messages: list, model: str, temperature: float, max_toke
 
         return response.choices[0].message.content
     except Exception as e:
-        return f"Error: {str(e)}"
+        return f"❌ Error: {str(e)}"
+
+def get_local_response(messages: list, model: str, temperature: float, max_tokens: int) -> str:
+    """Get response from Local API Server (OpenAI-compatible)"""
+    try:
+        # Build the local server URL
+        base_url = f"http://{st.session_state.local_host}:{st.session_state.local_port}"
+
+        # Convert messages to OpenAI format
+        api_messages = []
+        for msg in messages:
+            api_messages.append({
+                "role": msg["role"],
+                "content": msg["content"]
+            })
+
+        # Prepare the request
+        headers = {
+            "Content-Type": "application/json"
+        }
+
+        # Add API key if provided
+        if st.session_state.api_key:
+            headers["Authorization"] = f"Bearer {st.session_state.api_key}"
+
+        payload = {
+            "model": model,
+            "messages": api_messages,
+            "temperature": temperature,
+            "max_tokens": max_tokens
+        }
+
+        # Make the request to local server
+        response = requests.post(
+            f"{base_url}/v1/chat/completions",
+            json=payload,
+            headers=headers,
+            timeout=60
+        )
+
+        if response.status_code == 200:
+            data = response.json()
+            return data["choices"][0]["message"]["content"]
+        else:
+            return f"❌ Error: Server returned {response.status_code} - {response.text}"
+
+    except requests.exceptions.ConnectionError:
+        return f"❌ Connection Error: Could not connect to {base_url}. Make sure your local server is running."
+    except requests.exceptions.Timeout:
+        return "❌ Timeout Error: The request took too long. Try again or check your server."
+    except Exception as e:
+        return f"❌ Error: {str(e)}"
 
 # User input
-user_input = st.chat_input("Type your message here...")
-
-if user_input:
-    if not st.session_state.api_key:
-        st.error("⚠️ Please enter your API key in the sidebar.")
+if prompt := st.chat_input("What would you like to know?"):
+    # Validation
+    if provider == "Local":
+        if not st.session_state.local_host or not st.session_state.local_port:
+            st.error("⚠️ Please configure your local server host and port in the sidebar.")
+            st.stop()
     else:
-        # Add user message to chat
-        st.session_state.messages.append({"role": "user", "content": user_input})
+        if not st.session_state.api_key:
+            st.error("⚠️ Please enter your API key in the sidebar.")
+            st.stop()
 
-        # Get response from selected provider
+    # Display user message
+    with st.chat_message("user"):
+        st.markdown(prompt)
+
+    # Add user message to chat history
+    st.session_state.messages.append({"role": "user", "content": prompt})
+
+    # Get and display assistant response
+    with st.chat_message("assistant"):
         with st.spinner("Thinking..."):
             if st.session_state.provider == "Anthropic":
                 response = get_anthropic_response(
@@ -236,23 +332,25 @@ if user_input:
                     temperature,
                     max_tokens
                 )
-            else:  # OpenAI
+            elif st.session_state.provider == "OpenAI":
                 response = get_openai_response(
                     st.session_state.messages,
                     model,
                     temperature,
                     max_tokens
                 )
+            else:  # Local
+                response = get_local_response(
+                    st.session_state.messages,
+                    model,
+                    temperature,
+                    max_tokens
+                )
 
-        # Add assistant response to chat
-        st.session_state.messages.append({"role": "assistant", "content": response})
+        st.markdown(response)
 
-        # Rerun to update chat display
-        st.rerun()
+    # Add assistant response to chat history
+    st.session_state.messages.append({"role": "assistant", "content": response})
 
-# Footer
-st.markdown("---")
-st.markdown(
-    '<p style="text-align: center; color: #999; font-size: 0.9rem;">Powered by F5 | Streamlit LLM Inference Platform</p>',
-    unsafe_allow_html=True
-)
+    # Rerun to update the interface
+    st.rerun()
