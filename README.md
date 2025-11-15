@@ -13,6 +13,9 @@ A modern, clean Streamlit application for interacting with multiple Large Langua
 - **Chat History**: Maintain conversation context across messages
 - **Secure**: API keys stored securely in session state
 
+![App Screenshot](images/inference-app.png)
+
+
 ## Quick Start
 1. clone this repo
 
