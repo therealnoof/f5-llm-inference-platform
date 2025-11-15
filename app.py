@@ -188,7 +188,11 @@ st.markdown("""
         background-color: transparent !important;
     }
 
-    /* Code blocks - make text readable */
+    /* Code blocks - make text readable with high specificity */
+    .stChatMessage code,
+    .stChatMessage pre code,
+    [data-testid="stChatMessageContent"] code,
+    [data-testid="stChatMessageContent"] pre code,
     code {
         background-color: #f5f0e8 !important;
         color: #c17344 !important;
@@ -197,6 +201,8 @@ st.markdown("""
         font-family: 'Monaco', 'Menlo', 'Courier New', monospace !important;
     }
 
+    .stChatMessage pre,
+    [data-testid="stChatMessageContent"] pre,
     pre {
         background-color: #2d2d2d !important;
         border-radius: 8px !important;
@@ -204,10 +210,26 @@ st.markdown("""
         border: 1px solid #d4895a !important;
     }
 
-    pre code {
+    .stChatMessage pre code,
+    [data-testid="stChatMessageContent"] pre code,
+    pre code,
+    .stChatMessage pre span,
+    [data-testid="stChatMessageContent"] pre span {
         background-color: transparent !important;
         color: #f8f8f2 !important;
         padding: 0 !important;
+    }
+
+    /* Override black text for code spans */
+    .stChatMessage span code,
+    .stChatMessage div code,
+    .stChatMessage p code {
+        color: #c17344 !important;
+    }
+
+    .stChatMessage pre span,
+    .stChatMessage pre div {
+        color: #f8f8f2 !important;
     }
 
     /* Buttons */
