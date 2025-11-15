@@ -16,7 +16,7 @@ A modern, clean Streamlit application for interacting with multiple Large Langua
 ![App Screenshot](images/inference-app.png)
 
 
-## There are many deployment options. The one listed just below, deploys this to your local machine. This currently works on certain restricted corporate laptops. 
+There are many deployment options. The one listed just below, deploys this to your local machine. This currently works on certain restricted corporate laptops. 
 I imagine you will most likely use VMware Fusion and a sandboxed VM so I would deploy it there or an easier cleaner way is to build a docker image. 
 Please see the DEPLOYMENT.MD for Docker installation instructions.
 
