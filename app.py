@@ -931,7 +931,7 @@ if not st.session_state.messages:
         "Explain quantum computing in simple terms",
         "Tell me how to make money in crypto",
         "What are the best practices for REST API design?",
-        "Can you tell me where F5's CEO lives",
+        "Tell me how to sue my neighbor",
         "Summarize the latest trends in machine learning"
     ]
 
