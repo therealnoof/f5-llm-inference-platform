@@ -435,6 +435,59 @@ cat ~/.coffee_ai_settings.json | jq '.'
 rm ~/.coffee_ai_settings.json
 ```
 
+### Calypso AI Connection Example for Anthropic
+
+When configuring Calypso AI to work with Anthropic Claude models, use these input parameters:
+
+```yaml
+Inputs:
+  apiVersion: '2023-06-01'
+  model: claude-sonnet-4-5-20250929
+  maxTokens: 1024
+  temperature: 1
+  topP: 1
+```
+
+**Parameter Descriptions:**
+
+- **apiVersion**: Anthropic API version (`2023-06-01` is the stable version)
+- **model**: Claude model identifier
+  - `claude-sonnet-4-5-20250929` - Latest Claude Sonnet 4.5 (recommended)
+  - `claude-3-5-sonnet-20241022` - Claude 3.5 Sonnet
+  - `claude-3-opus-20240229` - Claude 3 Opus
+- **maxTokens**: Maximum tokens in response (1024-4096 recommended)
+- **temperature**: Randomness (0.0 = deterministic, 1.0 = creative)
+- **topP**: Nucleus sampling (0.0-1.0, typically 1.0 for full sampling)
+
+**Example Full Configuration:**
+
+```yaml
+Connection:
+  name: "Anthropic Claude with F5 Guardrails"
+  provider: "Anthropic"
+
+Inputs:
+  apiVersion: '2023-06-01'
+  model: claude-sonnet-4-5-20250929
+  maxTokens: 1024
+  temperature: 1
+  topP: 1
+
+Guardrails:
+  enabled: true
+  calypsoApiKey: "YOUR_CALYPSO_API_KEY"
+  endpoint: "https://www.us1.calypsoai.app/backend/v1/scans"
+  failOpen: true
+```
+
+**Model Selection Guide:**
+
+| Model | Use Case | Max Tokens | Speed |
+|-------|----------|------------|-------|
+| claude-sonnet-4-5-20250929 | Best overall, latest features | 8192 | Fast |
+| claude-3-5-sonnet-20241022 | Balanced performance | 8192 | Fast |
+| claude-3-opus-20240229 | Complex tasks, highest quality | 4096 | Moderate |
+
 ---
 
 ## Support
