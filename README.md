@@ -4,8 +4,8 @@ A modern, clean Streamlit application for interacting with multiple Large Langua
 
 ## Features
 
-- **Multi-Provider Support**: Switch seamlessly between Anthropic and OpenAI
-- **Modern UI**: Clean, professional interface with F5 branding
+- **Multi-Provider Support**: Switch seamlessly between Anthropic and OpenAI or your local LLM
+- **Modern UI**: Clean, professional interface with coffee shop vibe
 - **Model Selection**: Choose from the latest models:
   - Anthropic: Claude Sonnet 4.5, Claude 3.5 Sonnet/Haiku, Claude 3 Opus
   - OpenAI: GPT-4o, GPT-4o-mini, GPT-4 Turbo, GPT-3.5 Turbo
@@ -14,6 +14,7 @@ A modern, clean Streamlit application for interacting with multiple Large Langua
 - **Secure**: API keys stored securely in session state
 
 ## Quick Start
+1. clone this repo
 
 ### Installation
 
@@ -47,7 +48,7 @@ streamlit run app.py
 
 ### Configuration
 
-1. Select your LLM provider from the sidebar (Anthropic or OpenAI)
+1. Select your LLM provider from the sidebar (Anthropic, OpenAI or Local LLM)
 2. Enter your API key
 3. Choose your preferred model
 4. Adjust temperature (0.0 - 1.0) and max tokens as needed
@@ -69,6 +70,8 @@ streamlit run app.py
 You'll need API keys from:
 - **Anthropic**: Get yours at https://console.anthropic.com/
 - **OpenAI**: Get yours at https://platform.openai.com/api-keys
+- **Local LLM**: Consult your LLM platform such as Jan or Ollama, you will need to start an API server and get the key and path
+- **F5 AI Guardrails**: You will need an API key from the Calypso/F5 console
 
 ## Deployment
 
