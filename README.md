@@ -1,6 +1,6 @@
 # F5 LLM Inference Platform
 
-A modern, clean Streamlit application for interacting with multiple Large Language Model (LLM) providers including Anthropic Claude and OpenAI GPT models.
+A modern, clean Streamlit application for interacting with multiple Large Language Model (LLM) providers including Anthropic Claude and OpenAI GPT models or your local LLM. This application has built in integration for F5 AI Guardrails so you can use this application locally to demo the power of AI inference security.
 
 ## Features
 
