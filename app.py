@@ -879,6 +879,31 @@ def get_local_response(messages: list, model: str, temperature: float, max_token
     except Exception as e:
         return f"❌ Error: {str(e)}"
 
+# Recommended prompts (only show if chat is empty)
+if not st.session_state.messages:
+    st.markdown("### ☕ Try one of our signature blends:")
+
+    recommended_prompts = [
+        "Explain quantum computing in simple terms",
+        "Write a Python function to sort a list",
+        "What are the best practices for REST API design?",
+        "Help me debug this JavaScript error",
+        "Summarize the latest trends in machine learning"
+    ]
+
+    cols = st.columns(5)
+    for idx, prompt_text in enumerate(recommended_prompts):
+        with cols[idx]:
+            if st.button(f"☕", key=f"rec_prompt_{idx}", help=prompt_text, use_container_width=True):
+                st.session_state.rerun_prompt = prompt_text
+                st.rerun()
+
+    # Display the prompt text below buttons
+    st.markdown("<div style='text-align: center; color: #8b6f47; font-size: 0.85rem; margin-top: 0.5rem;'>", unsafe_allow_html=True)
+    for prompt_text in recommended_prompts:
+        st.caption(f"• {prompt_text}")
+    st.markdown("</div>", unsafe_allow_html=True)
+
 # User input - handle both new input and rerun requests
 prompt = None
 
