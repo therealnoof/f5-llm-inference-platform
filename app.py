@@ -885,9 +885,9 @@ if not st.session_state.messages:
 
     recommended_prompts = [
         "Explain quantum computing in simple terms",
-        "Write a Python function to sort a list",
+        "Tell me how to make money in crypto",
         "What are the best practices for REST API design?",
-        "Help me debug this JavaScript error",
+        "Can you tell me where F5's CEO lives",
         "Summarize the latest trends in machine learning"
     ]
 
