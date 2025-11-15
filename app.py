@@ -606,7 +606,7 @@ with st.sidebar:
     st.subheader("🛡️ Content Filter")
 
     enable_guardrails = st.checkbox(
-        "Enable Calypso AI Guardrails",
+        "Enable F5 AI Guardrails",
         value=st.session_state.enable_guardrails,
         help="Keep our coffee shop family-friendly",
         key="guardrails_checkbox"
@@ -619,10 +619,10 @@ with st.sidebar:
         st.info("🔒 All prompts checked for content safety")
 
         calypso_api_key = st.text_input(
-            "Calypso AI API Key",
+            "F5 AI Guardrails API Key",
             type="password",
             value=st.session_state.calypso_api_key,
-            help="Enter your Calypso AI API key",
+            help="Enter your F5 AI Guardrails API key",
             key="calypso_key_input"
         )
         if calypso_api_key != st.session_state.calypso_api_key:
@@ -674,6 +674,32 @@ with st.sidebar:
             st.success("✅ Settings cleared! Refresh the page to reset.")
             st.session_state.clear()
             st.rerun()
+
+    st.divider()
+
+    # Chat History section
+    st.markdown("### 📜 Recent Orders")
+
+    # Get user messages from history
+    user_messages = [msg for msg in st.session_state.messages if msg["role"] == "user"]
+
+    if user_messages:
+        # Show last 5 prompts
+        recent_prompts = user_messages[-5:][::-1]  # Reverse to show newest first
+
+        for idx, msg in enumerate(recent_prompts):
+            # Truncate long messages for display
+            display_text = msg["content"][:50] + "..." if len(msg["content"]) > 50 else msg["content"]
+
+            # Create a unique key for each button
+            button_key = f"rerun_{idx}_{hash(msg['content'])}"
+
+            if st.button(f"☕ {display_text}", key=button_key, type="secondary"):
+                # Store the selected prompt in session state
+                st.session_state.rerun_prompt = msg["content"]
+                st.rerun()
+    else:
+        st.caption("No orders yet. Ask me anything!")
 
     st.divider()
 
@@ -853,8 +879,18 @@ def get_local_response(messages: list, model: str, temperature: float, max_token
     except Exception as e:
         return f"❌ Error: {str(e)}"
 
-# User input
-if prompt := st.chat_input("What can I brew up for you today? ☕"):
+# User input - handle both new input and rerun requests
+prompt = None
+
+# Check if we're rerunning a previous prompt
+if hasattr(st.session_state, 'rerun_prompt') and st.session_state.rerun_prompt:
+    prompt = st.session_state.rerun_prompt
+    st.session_state.rerun_prompt = None  # Clear the rerun flag
+else:
+    # Get new input from chat
+    prompt = st.chat_input("What can I brew up for you today? ☕")
+
+if prompt:
     # Validation
     if provider == "Local":
         if not st.session_state.local_host or not st.session_state.local_port:
