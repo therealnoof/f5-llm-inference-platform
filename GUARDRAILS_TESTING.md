@@ -488,6 +488,93 @@ Guardrails:
 | claude-3-5-sonnet-20241022 | Balanced performance | 8192 | Fast |
 | claude-3-opus-20240229 | Complex tasks, highest quality | 4096 | Moderate |
 
+### Complete Workflow Configuration Example
+
+Here's a complete YAML configuration for Calypso AI workflow with Anthropic integration:
+
+```yaml
+outputs:
+  content: '{{ content }}'
+  statusCode: '{{ statusCode }}'
+type: workflow
+stages:
+  - type: retry
+    attempts: 3
+    backoff: '{{ 2 * attempt }}'
+    block:
+      outputs:
+        content: '{{ response.json()?.content?.[0]?.text || response.body }}'
+        statusCode: '{{ response.statusCode }}'
+      type: request
+      method: POST
+      json: |-
+        {{ {
+          model: model,
+          max_tokens: maxTokens,
+          messages: [
+            {role: 'user', content: prompt}
+          ]
+        } }}
+      timeout: 300
+      url: https://api.anthropic.com/v1/messages
+      headers:
+        Content-Type: application/json
+        x-api-key: '{{ apiKey }}'
+        anthropic-version: '2023-06-01'
+      queryParams: {}
+    when: '{{ Array.contains([429, 500, 502, 503, 504], statusCode) }}'
+```
+
+**Configuration Breakdown:**
+
+**Outputs:**
+- `content`: Response text from Claude
+- `statusCode`: HTTP status code from API
+
+**Workflow Type:**
+- `type: workflow` - Defines this as a Calypso AI workflow
+
+**Retry Stage:**
+- `attempts: 3` - Retry up to 3 times on failure
+- `backoff: '{{ 2 * attempt }}'` - Exponential backoff (2s, 4s, 6s)
+- `when: Array.contains([429, 500, 502, 503, 504], statusCode)` - Retry on these HTTP codes:
+  - 429: Rate limit exceeded
+  - 500: Internal server error
+  - 502: Bad gateway
+  - 503: Service unavailable
+  - 504: Gateway timeout
+
+**Request Block:**
+- `method: POST` - HTTP POST request
+- `url: https://api.anthropic.com/v1/messages` - Anthropic Messages API endpoint
+- `timeout: 300` - 5 minute timeout (300 seconds)
+
+**Headers:**
+- `Content-Type: application/json` - JSON request format
+- `x-api-key: '{{ apiKey }}'` - Your Anthropic API key (variable)
+- `anthropic-version: '2023-06-01'` - API version
+
+**Request Body:**
+```javascript
+{
+  model: model,              // e.g., "claude-sonnet-4-5-20250929"
+  max_tokens: maxTokens,     // e.g., 1024
+  messages: [
+    {role: 'user', content: prompt}
+  ]
+}
+```
+
+**Response Parsing:**
+- Extracts text from `response.json().content[0].text`
+- Falls back to `response.body` if JSON parsing fails
+
+**Usage Variables:**
+- `{{ apiKey }}` - Your Anthropic API key
+- `{{ model }}` - Claude model identifier
+- `{{ maxTokens }}` - Maximum response tokens
+- `{{ prompt }}` - User input text
+
 ---
 
 ## Support
