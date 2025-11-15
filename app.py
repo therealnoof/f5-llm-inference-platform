@@ -111,9 +111,34 @@ st.markdown("""
     h1 {
         color: #6b4423;
         font-weight: 700;
-        padding-bottom: 0.5rem;
+        padding: 1.5rem 0.5rem;
         text-shadow: 1px 1px 2px rgba(139, 111, 71, 0.1);
         text-align: center;
+        background: linear-gradient(135deg, #fff8f0 0%, #f5ead5 50%, #fff8f0 100%);
+        border-radius: 12px;
+        box-shadow: 0 2px 8px rgba(139, 111, 71, 0.1);
+        position: relative;
+    }
+
+    /* Fall leaves decoration for header */
+    h1::before {
+        content: "🍂";
+        position: absolute;
+        left: 20px;
+        top: 50%;
+        transform: translateY(-50%) rotate(-15deg);
+        font-size: 1.5rem;
+        opacity: 0.6;
+    }
+
+    h1::after {
+        content: "🍁";
+        position: absolute;
+        right: 20px;
+        top: 50%;
+        transform: translateY(-50%) rotate(15deg);
+        font-size: 1.5rem;
+        opacity: 0.6;
     }
 
     h3 {
@@ -335,6 +360,10 @@ st.markdown("""
     .stCaptionContainer, .caption {
         color: #8b6f47;
         text-align: center;
+        background: linear-gradient(135deg, #fff8f0 0%, #f5ead5 50%, #fff8f0 100%);
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
+        margin-bottom: 1rem;
     }
 
     /* Chat input */
@@ -379,13 +408,24 @@ st.markdown("""
         bottom: 0;
         left: 0;
         width: 100%;
-        background-color: #f5f0e8;
-        padding: 1rem;
+        background: linear-gradient(135deg, #fff8f0 0%, #f5ead5 50%, #fff8f0 100%);
+        padding: 1rem 2rem;
         text-align: center;
         color: #8b6f47;
         font-size: 0.9rem;
-        border-top: 2px solid #e6d5c3;
+        border-top: 2px solid #d4895a;
+        box-shadow: 0 -2px 8px rgba(139, 111, 71, 0.1);
         z-index: 999;
+    }
+
+    .footer::before {
+        content: "🍂 ";
+        opacity: 0.6;
+    }
+
+    .footer::after {
+        content: " 🍁";
+        opacity: 0.6;
     }
 
     /* Spinner */
@@ -646,7 +686,7 @@ with st.sidebar:
     - ☕ Anthropic Claude
     - 🍂 OpenAI GPT
     - 🏠 Local AI Servers
-    - 🛡️ Calypso Guardrails
+    - 🛡️ F5 Guardrails
 
     *Serving fresh AI since 2024*
     """)
@@ -679,10 +719,13 @@ def check_guardrails(prompt: str) -> dict:
 
         if response.status_code == 200:
             data = response.json()
+            outcome = data.get("result", {}).get("outcome", "flagged")
+            is_blocked = (outcome == "flagged")
+
             return {
-                "allowed": data.get("allowed", False),
-                "blocked": data.get("blocked", True),
-                "reason": data.get("reason", "Content policy violation"),
+                "allowed": not is_blocked,
+                "blocked": is_blocked,
+                "reason": data.get("reason", "F5 Guardrails Policy Violation" if is_blocked else "Content approved"),
                 "categories": data.get("categories", [])
             }
         else:
@@ -832,7 +875,7 @@ if prompt := st.chat_input("What can I brew up for you today? ☕"):
             guardrails_result = check_guardrails(prompt)
 
         if guardrails_result["blocked"]:
-            st.error(f"🚫 **Sorry, we can't serve that here!**\n\n{guardrails_result['reason']}")
+            st.error(f"🚫 **Sorry mate, that particular brand of coffee is forbidden.**\n\n{guardrails_result['reason']}")
             if guardrails_result.get("categories"):
                 st.caption(f"Flagged: {', '.join(guardrails_result['categories'])}")
             st.stop()
