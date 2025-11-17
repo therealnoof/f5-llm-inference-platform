@@ -21,7 +21,7 @@ I imagine you will most likely use VMware Fusion and a sandboxed VM so I would d
 Please see the DEPLOYMENT.MD for Docker installation instructions.
 
 ## Quick Start
-1. clone this repo
+You can pull the pre-built Docker image from Docker Hub, this is the easy button to get up and running. See the DEPLOYMENT.md instructions
 
 ### Installation
 
