@@ -111,39 +111,133 @@ The application will automatically open in your default browser at `http://local
 
 ### Option 2: Docker Deployment
 
-1. **Create a Dockerfile:**
+#### Option 2a: Pull Pre-built Image from Docker Hub (Fastest)
 
-```dockerfile
-FROM python:3.11-slim
+**This is the easiest method - no building required!**
 
-WORKDIR /app
-
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
-
-COPY . .
-
-EXPOSE 8501
-
-HEALTHCHECK CMD curl --fail http://localhost:8501/_stcore/health
-
-ENTRYPOINT ["streamlit", "run", "app.py", "--server.port=8501", "--server.address=0.0.0.0"]
-```
-
-2. **Build and run the Docker container:**
+1. **Pull the image from Docker Hub:**
 
 ```bash
-# Build the image
-docker build -t f5-llm-inference .
+docker pull YOUR_USERNAME/coffee-ai-guardrails:latest
+```
 
-# Run the container
+2. **Run the container:**
+
+```bash
+# Basic run (settings won't persist)
+docker run -p 8501:8501 YOUR_USERNAME/coffee-ai-guardrails:latest
+
+# Run with persistent settings
+docker run -p 8501:8501 \
+  -v ~/.coffee_ai_settings.json:/root/.coffee_ai_settings.json \
+  YOUR_USERNAME/coffee-ai-guardrails:latest
+
+# Run in detached mode (background)
+docker run -d -p 8501:8501 \
+  --name coffee-ai-app \
+  -v ~/.coffee_ai_settings.json:/root/.coffee_ai_settings.json \
+  YOUR_USERNAME/coffee-ai-guardrails:latest
+
+# Run with API keys pre-configured
+docker run -d -p 8501:8501 \
+  --name coffee-ai-app \
+  -e ANTHROPIC_API_KEY=your_anthropic_key \
+  -e OPENAI_API_KEY=your_openai_key \
+  -v ~/.coffee_ai_settings.json:/root/.coffee_ai_settings.json \
+  YOUR_USERNAME/coffee-ai-guardrails:latest
+```
+
+3. **Access the app at:** `http://localhost:8501`
+
+4. **Manage the container:**
+
+```bash
+# View running containers
+docker ps
+
+# Stop the container
+docker stop coffee-ai-app
+
+# Start the container again
+docker start coffee-ai-app
+
+# View logs
+docker logs coffee-ai-app
+
+# Follow logs in real-time
+docker logs -f coffee-ai-app
+
+# Remove the container
+docker rm coffee-ai-app
+```
+
+#### Option 2b: Build Your Own Docker Image
+
+1. **Clone the repository:**
+
+```bash
+git clone https://github.com/therealnoof/f5-llm-inference-platform.git
+cd f5-llm-inference-platform
+```
+
+2. **Build the Docker image:**
+
+```bash
+docker build -t f5-llm-inference .
+```
+
+3. **Run the container:**
+
+```bash
+# Basic run
+docker run -p 8501:8501 f5-llm-inference
+
+# Run with environment variables
 docker run -p 8501:8501 \
   -e ANTHROPIC_API_KEY=your_key \
   -e OPENAI_API_KEY=your_key \
   f5-llm-inference
+
+# Run in detached mode with persistent settings
+docker run -d -p 8501:8501 \
+  --name coffee-ai-app \
+  -e ANTHROPIC_API_KEY=your_key \
+  -e OPENAI_API_KEY=your_key \
+  -v ~/.coffee_ai_settings.json:/root/.coffee_ai_settings.json \
+  f5-llm-inference
 ```
 
-3. **Access the app at:** `http://localhost:8501`
+4. **Access the app at:** `http://localhost:8501`
+
+#### Docker Compose (Advanced)
+
+Create a `docker-compose.yml` file:
+
+```yaml
+version: '3.8'
+
+services:
+  coffee-ai:
+    image: YOUR_USERNAME/coffee-ai-guardrails:latest
+    ports:
+      - "8501:8501"
+    environment:
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+    volumes:
+      - ~/.coffee_ai_settings.json:/root/.coffee_ai_settings.json
+    restart: unless-stopped
+```
+
+Run with:
+```bash
+docker-compose up -d
+```
+
+Stop with:
+```bash
+docker-compose down
+```
 
 ### Option 3: AWS EC2 Deployment
 
