@@ -1,116 +1,126 @@
-# F5 LLM Inference Platform
+# F5 Projects Repository
 
-A modern, clean Streamlit application for interacting with multiple Large Language Model (LLM) providers including Anthropic Claude and OpenAI GPT models or your local LLM. This application has built in integration for F5 AI Guardrails so you can use this application locally to demo the power of AI inference security.
+This repository contains multiple F5-related demonstration and utility applications.
 
-## Features
+## Projects
 
-- **Multi-Provider Support**: Switch seamlessly between Anthropic and OpenAI or your local LLM
-- **Modern UI**: Clean, professional interface with coffee shop vibes, just hit play on the Spotify playlist.
-- **Model Selection**: Choose from the latest models:
-  - Anthropic: Claude Sonnet 4.5, Claude 3.5 Sonnet/Haiku, Claude 3 Opus
-  - OpenAI: GPT-4o, GPT-4o-mini, GPT-4 Turbo, GPT-3.5 Turbo
-- **Configurable Parameters**: Adjust temperature and max tokens
-- **Chat History**: Maintain conversation context across messages
-- **Secure**: API keys stored securely in session state
+### 1. Coffee AI Guardrails (`coffee-ai-guardrails/`)
 
-![App Screenshot](images/inference-app.png)
+A beautiful coffee shop-themed LLM inference platform with Calypso AI content filtering.
 
+**Features:**
+- ☕ Cozy coffee shop theme with fall colors
+- 🤖 Multiple LLM providers (Anthropic Claude, OpenAI GPT)
+- 🛡️ Calypso AI guardrails integration
+- 🏠 Local server support (LM Studio, Ollama, vLLM)
+- 💾 Persistent settings across sessions
+- 🎨 Clean, centered chat interface
 
-There are many deployment options. The one listed just below, deploys this to your local machine. This currently works on certain restricted corporate laptops. 
-I imagine you will most likely use VMware Fusion and a sandboxed VM so I would deploy it there or an easier cleaner way is to build a docker image. 
-Please see the DEPLOYMENT.MD for Docker installation instructions.
-
-## Quick Start
-You can pull the pre-built Docker image from Docker Hub, this is the easy button to get up and running. See the DEPLOYMENT.md instructions
-
-### Installation
-
-1. Install Python dependencies:
-
-**On macOS:**
+**Quick Start:**
 ```bash
-pip3 install -r requirements.txt
+cd coffee-ai-guardrails
+docker pull YOUR_USERNAME/coffee-ai-guardrails:latest
+docker run -p 8501:8501 YOUR_USERNAME/coffee-ai-guardrails:latest
 ```
 
-**On Linux/Windows:**
+**Documentation:**
+- [README.md](coffee-ai-guardrails/README.md) - Main documentation
+- [DEPLOYMENT.md](coffee-ai-guardrails/DEPLOYMENT.md) - Deployment guide
+- [DOCKER_HUB_QUICKSTART.md](coffee-ai-guardrails/DOCKER_HUB_QUICKSTART.md) - Docker deployment
+- [BUILD_AND_PUSH.md](coffee-ai-guardrails/BUILD_AND_PUSH.md) - Multi-platform build guide
+- [GUARDRAILS_TESTING.md](coffee-ai-guardrails/GUARDRAILS_TESTING.md) - Testing guardrails
+
+**Repository:** https://github.com/therealnoof/f5-llm-inference-platform
+
+---
+
+### 2. Demo Showcase (`demo-showcase/`)
+
+A modern video showcase application for trade shows and demos.
+
+**Features:**
+- 📹 Video upload and management
+- 🎨 Category organization system
+- 🏷️ Tag videos with multiple categories
+- 🔍 Filter videos by category
+- 📱 Responsive tile-based interface
+- ⚙️ Admin panel for content management
+- 🎥 Full-screen video player with navigation
+- 🌑 Dark theme with F5 branding
+
+**Quick Start:**
 ```bash
-pip install -r requirements.txt
+cd demo-showcase
+docker compose up --build
 ```
 
-2. Run the application:
+**Access:**
+- Frontend: http://localhost
+- Backend API: http://localhost:8000
+- API Docs: http://localhost:8000/docs
 
-**On macOS:**
+**Documentation:**
+- [README.md](demo-showcase/README.md) - Full documentation
+- [QUICKSTART.md](demo-showcase/QUICKSTART.md) - Quick setup guide
+
+**Repository:** https://github.com/therealnoof/universal-demo-app
+
+---
+
+### 3. Simple MCP Server (`simple-mcp-server/`)
+
+A Model Context Protocol (MCP) server implementation.
+
+**Quick Start:**
 ```bash
-python3 -m streamlit run app.py
+cd simple-mcp-server
+# Follow the README in the directory
 ```
 
-**On Linux/Windows (or if using virtual environment):**
-```bash
-streamlit run app.py
-```
+---
 
-3. Open your browser to `http://localhost:8501`
-
-**Note:** For detailed setup instructions including PATH configuration, see [DEPLOYMENT.md](DEPLOYMENT.md)
-
-### Configuration
-
-1. Select your LLM provider from the sidebar (Anthropic, OpenAI or Local LLM)
-2. Enter your API key
-3. Choose your preferred model
-4. Adjust temperature (0.0 - 1.0) and max tokens as needed
-5. Start chatting!
-
-## Project Structure
+## Repository Structure
 
 ```
-.
-├── app.py                 # Main Streamlit application
-├── requirements.txt       # Python dependencies
-├── DEPLOYMENT.md         # Detailed deployment instructions
-├── README.md             # This file
-└── .gitignore           # Git ignore rules
+projects/
+├── coffee-ai-guardrails/    # Streamlit LLM inference app
+│   ├── app.py
+│   ├── Dockerfile
+│   ├── requirements.txt
+│   └── *.md (documentation)
+├── demo-showcase/           # Video showcase application
+│   ├── frontend/           # React + TypeScript
+│   ├── backend/            # FastAPI
+│   └── docker-compose.yml
+├── simple-mcp-server/      # MCP server
+└── README.md              # This file
 ```
 
-## API Keys
+## Getting Started
 
-You'll need API keys from:
-- **Anthropic**: Get yours at https://console.anthropic.com/
-- **OpenAI**: Get yours at https://platform.openai.com/api-keys
-- **Local LLM**: Consult your LLM platform such as Jan or Ollama, you will need to start an API server and get the key and path
-- **F5 AI Guardrails**: You will need an API key from the Calypso/F5 console
+Each project has its own README and documentation. Navigate to the project directory and follow the specific instructions.
 
-## Deployment
+## Technologies Used
 
-See [DEPLOYMENT.md](DEPLOYMENT.md) for comprehensive deployment instructions including:
-- Local development setup
-- Streamlit Community Cloud
-- Docker deployment
-- AWS EC2
-- Google Cloud Run
-- Azure Container Instances
+### Coffee AI Guardrails
+- Python 3.11
+- Streamlit
+- Anthropic Claude API
+- OpenAI API
+- Calypso AI
 
-## Technologies
-
-- **Streamlit**: Web application framework
-- **Anthropic SDK**: Claude API integration
-- **OpenAI SDK**: GPT API integration
-- **Python 3.8+**: Core programming language
-
-## Security
-
-- Never commit API keys to version control
-- Use environment variables for sensitive data
-- Enable HTTPS for production deployments
-- Review the security best practices in DEPLOYMENT.md
+### Demo Showcase
+- **Frontend:** React 18, TypeScript, Tailwind CSS, Vite
+- **Backend:** FastAPI, SQLAlchemy, SQLite
+- **DevOps:** Docker, Docker Compose, Nginx
+- **Video:** MoviePy, Pillow
 
 ## License
 
-This project is provided as-is for demonstration purposes.
+These projects are provided as-is for demonstration purposes.
 
 ## Support
 
-For deployment assistance or technical questions, refer to:
-- [Streamlit Documentation](https://docs.streamlit.io)
-- [Anthropic API Documentation](https://docs.anthropic.com)
-- [OpenAI API Documentation](https://platform.openai.com/docs)
+For issues or questions, please refer to the individual project repositories:
+- [F5 LLM Inference Platform](https://github.com/therealnoof/f5-llm-inference-platform)
+- [Universal Demo App](https://github.com/therealnoof/universal-demo-app)
