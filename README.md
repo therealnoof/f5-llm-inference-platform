@@ -7,8 +7,8 @@ A modern, clean Streamlit application for interacting with multiple Large Langua
 - **Multi-Provider Support**: Switch seamlessly between Anthropic and OpenAI or your local LLM
 - **Modern UI**: Clean, professional interface with coffee shop vibes, just hit play on the Spotify playlist.
 - **Model Selection**: Choose from the latest models:
-  - Anthropic: Claude Sonnet 4.5, Claude 3.5 Sonnet/Haiku, Claude 3 Opus
-  - OpenAI: GPT-4o, GPT-4o-mini, GPT-4 Turbo, GPT-3.5 Turbo
+  - Anthropic: Claude Opus 5.5, Claude Sonnet 5.5, Claude Haiku 5.5, Claude Fable 5.2
+  - OpenAI: GPT-6.1 Sol, GPT-6.1 Terra, GPT-6 Astra, GPT-6 Luna
 - **Configurable Parameters**: Adjust temperature and max tokens
 - **Chat History**: Maintain conversation context across messages
 - **Secure**: API keys stored securely in session state

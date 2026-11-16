@@ -598,11 +598,13 @@ with st.sidebar:
 
     # Model selection based on provider
     if provider == "Anthropic":
+        # Current Claude models (API IDs from platform.claude.com/docs/en/models/overview)
+        # The first item in the list is the default selection.
         anthropic_models = [
-            "claude-sonnet-4-5-20250929",
-            "claude-3-5-sonnet-20241022",
-            "claude-3-5-haiku-20241022",
-            "claude-3-opus-20240229"
+            "claude-opus-5-5",
+            "claude-sonnet-5-5",
+            "claude-haiku-5-5",
+            "claude-fable-5-2"
         ]
         default_index = 0
         if st.session_state.model and st.session_state.model in anthropic_models:
@@ -615,11 +617,13 @@ with st.sidebar:
             key="model_select"
         )
     elif provider == "OpenAI":
+        # Current OpenAI chat models (all support the Chat Completions API).
+        # The first item in the list is the default selection.
         openai_models = [
-            "gpt-4o",
-            "gpt-4o-mini",
-            "gpt-4-turbo",
-            "gpt-3.5-turbo"
+            "gpt-6.1-sol",
+            "gpt-6.1-terra",
+            "gpt-6-astra",
+            "gpt-6-luna"
         ]
         default_index = 0
         if st.session_state.model and st.session_state.model in openai_models:
@@ -861,12 +865,21 @@ def get_openai_response(messages: list, model: str, temperature: float, max_toke
                 "content": msg["content"]
             })
 
-        response = client.chat.completions.create(
-            model=model,
-            messages=openai_messages,
-            temperature=temperature,
-            max_tokens=max_tokens
-        )
+        # Build the request. GPT-6 models are reasoning models, so we use
+        # "max_completion_tokens", the parameter OpenAI's reasoning models
+        # use for output length (instead of the older "max_tokens").
+        request_args = {
+            "model": model,
+            "messages": openai_messages,
+            "max_completion_tokens": max_tokens,
+        }
+
+        # gpt-6-astra does not support a custom temperature, so we only
+        # send the temperature setting for the other models.
+        if model != "gpt-6-astra":
+            request_args["temperature"] = temperature
+
+        response = client.chat.completions.create(**request_args)
 
         return response.choices[0].message.content
     except Exception as e:
